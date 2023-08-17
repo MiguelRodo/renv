@@ -8,7 +8,7 @@ renv_pak_init <- function(stream = NULL, force = FALSE) {
   if (force || !renv_pak_available())
     renv_pak_init_impl(stream)
 
-  renv_namespace_load("pak")
+  # renv_namespace_load("pak")
 
 }
 
@@ -55,7 +55,7 @@ renv_pak_init_impl <- function(stream) {
 
   library <- renv_libpaths_active()
   install("pak", library = library)
-  loadNamespace("pak", lib.loc = library)
+  # loadNamespace("pak", lib.loc = library)
 
 }
 
