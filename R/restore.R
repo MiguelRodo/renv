@@ -91,17 +91,21 @@ restore <- function(project  = NULL,
     }
 
     # install using pak in a separate process
-    pak_install_args <- paste0(
-      "-e '",
-      "renv:::renv_pak_install(",
-      "lockfile = ", capture.output(dput(lockfile)), ", ",
-      "packages = ", capture.output(dput(packages)), ", ",
-      "exclude  = ", capture.output(dput(exclude)), ", ",
-      "project  = ", capture.output(dput(project)),
-      ")'",
-      collapse = ""
+    pak_restore_args <- paste0(
+        c(
+          "-e '",
+          substitute(
+          renv:::renv_pak_restore(
+          packages = packages,
+          lockfile = lockfile,
+          project = project,
+          exclude = exclude)
+          ),
+          "'"
+        ),
+        collapse = ""
     )
-    return(system2("Rscript", pak_install_args))
+    return(system2("Rscript", pak_restore_args))
   }
 
   # set up Bioconductor version + repositories

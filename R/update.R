@@ -286,12 +286,17 @@ update <- function(packages = NULL,
     }
     # install using pak in a separate process
     pak_install_args <- paste0(
-      "-e '",
-      "renv:::renv_pak_install(",
-      capture.output(dput(packages)), ", ",
-      capture.output(dput(libpaths)), ", ",
-      capture.output(dput(project)),
-      ")'",
+      c(
+        "-e '",
+        substitute(
+          renv:::renv_pak_restore(
+           packages = packages,
+           libpaths = libpaths,
+           project = project
+          )
+        ),
+        "'"
+      ),
       collapse = ""
     )
     return(system2("Rscript", pak_install_args))
