@@ -86,7 +86,7 @@ restore <- function(project  = NULL,
   if (config$pak.enabled() && !recursing()) {
     if (!requireNamespace("pak", quietly = TRUE)) {
       # install pak in a separate process
-      invisible(system2("Rscript", "-e renv:::renv_pak_init()"))
+      invisible(system2("Rscript", "-e 'renv:::renv_pak_init()'"))
       Sys.sleep(0.5)
     }
 
@@ -98,7 +98,7 @@ restore <- function(project  = NULL,
       "packages = ", capture.output(dput(packages)), ", ",
       "exclude  = ", capture.output(dput(exclude)), ", ",
       "project  = ", capture.output(dput(project)),
-      "')",
+      ")'",
       collapse = ""
     )
     return(system2("Rscript", pak_install_args))

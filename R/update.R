@@ -281,7 +281,7 @@ update <- function(packages = NULL,
     packages <- setdiff(packages, exclude)
     if (!requireNamespace("pak", quietly = TRUE)) {
       # install pak in a separate process
-      invisible(system2("Rscript", "-e renv:::renv_pak_init()"))
+      invisible(system2("Rscript", "-e 'renv:::renv_pak_init()'"))
       Sys.sleep(0.5)
     }
     # install using pak in a separate process
@@ -291,7 +291,7 @@ update <- function(packages = NULL,
       capture.output(dput(packages)), ", ",
       capture.output(dput(libpaths)), ", ",
       capture.output(dput(project)),
-      "')",
+      ")'",
       collapse = ""
     )
     return(system2("Rscript", pak_install_args))
