@@ -279,8 +279,21 @@ update <- function(packages = NULL,
   # if users have requested the use of pak, delegate there
   if (config$pak.enabled() && !recursing()) {
     packages <- setdiff(packages, exclude)
-    renv_pak_init()
-    return(renv_pak_install(packages, libpaths, project))
+    if (!requireNamespace("pak", quietly = TRUE)) {
+      # install pak in a separate process
+      invisible(system2("Rscript", "-e renv:::renv_pak_init()"))
+      Sys.sleep(0.5)
+    }
+    # install using pak in a separate process
+    pak_install_args <- paste0(
+      "-e '",
+      "renv:::renv_pak_install(",
+      capture.output(dput(packages)), ", ",
+      capture.output(dput(libpaths)), ", ",
+      capture.output(dput(project)),
+      "')"
+    )
+    return(system2("Rscript", pak_install_args))
   }
 
   # get package records
