@@ -84,28 +84,25 @@ restore <- function(project  = NULL,
 
   # if users have requested the use of pak, delegate there
   if (config$pak.enabled() && !recursing()) {
-    if (!requireNamespace("pak", quietly = TRUE)) {
-      # install pak in a separate process
-      invisible(system2("Rscript", "-e 'renv:::renv_pak_init()'"))
-      Sys.sleep(0.5)
-    }
-
-    # install using pak in a separate process
-    pak_restore_args <- paste0(
-      c(
-        "-e '",
-        substitute(
-          renv:::renv_pak_restore(
-            packages = packages,
-            lockfile = lockfile,
-            project = project,
-            exclude = exclude)
-          ),
-        "'"
-      ),
-      collapse = ""
+    renv_pak_init()
+    return(
+      tryCatch(
+        renv_pak_restore(
+          packages = packages,
+          lockfile = lockfile,
+          project = project,
+          exclude = exclude
+        ),
+        error = function(x) {
+         renv_pak_restore(
+          packages = packages,
+          lockfile = lockfile,
+          project = project,
+          exclude = exclude
+         )
+        }
+      )
     )
-    return(system2("Rscript", pak_restore_args))
   }
 
   # set up Bioconductor version + repositories
