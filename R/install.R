@@ -137,13 +137,13 @@ install <- function(packages = NULL,
 
   # if users have requested the use of pak, delegate there
   if (config$pak.enabled() && !recursing()) {
-    renv_pak_init()
-    return(
-      tryCatch(
-        renv_pak_install(packages, libpaths, project),
-        error = function(x) renv_pak_install(packages, libpaths, project)
-      )
-    )
+    if (!requireNamespace("pak", quietly = TRUE)) {
+      # rather install pak in a separate process
+      invisible(system2("Rscript", "-e renv:::renv_pak_init()"))
+    }
+    
+    # now try install using pak
+    return(renv_pak_install(packages, libpaths, project))
   }
 
   # resolve remotes from explicitly-requested packages
