@@ -298,6 +298,7 @@ update <- function(packages = NULL,
       )
       k <- k + 1
     }
+    
     if (inherits(result, "error"))
       stop(conditionMessage(result)
     
