@@ -149,7 +149,8 @@ install <- function(packages = NULL,
       capture.output(dput(packages)), ", ",
       capture.output(dput(libpaths)), ", ",
       capture.output(dput(project)),
-      "')"
+      "')",
+      collapse = ""
     )
     return(system2("Rscript", pak_install_args))
   }

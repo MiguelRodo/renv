@@ -98,7 +98,8 @@ restore <- function(project  = NULL,
       "packages = ", capture.output(dput(packages)), ", ",
       "exclude  = ", capture.output(dput(exclude)), ", ",
       "project  = ", capture.output(dput(project)),
-      "')"
+      "')",
+      collapse = ""
     )
     return(system2("Rscript", pak_install_args))
   }
