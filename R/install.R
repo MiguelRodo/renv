@@ -131,7 +131,7 @@ install <- function(packages = NULL,
   }
 
   # override repositories if requested
-  repos <- repos %||% config$repos.override()project
+  repos <- repos %||% config$repos.override()
   if (length(repos))
     renv_scope_options(repos = repos)
 
