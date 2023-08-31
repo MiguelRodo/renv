@@ -138,12 +138,15 @@ install <- function(packages = NULL,
   # if users have requested the use of pak, delegate there
   if (config$pak.enabled() && !recursing()) {
     renv_pak_init()
-    return(
-      tryCatch(
-        renv_pak_install(packages, libpaths, project),
-        error = function(x) renv_pak_install(packages, libpaths, project)
-      )
-    )
+    k <- 0
+    install_obj <- try(stop())
+    while (k <= 3 && inherits(install_obj, "try-error")) {
+      install_obj <- try(renv_pak_install(packages, libpaths, project))
+      k <- k + 1
+    }
+    if (inherits(install_obj, "try-error"))
+      stop("Error while installing using pak")
+    return(install_obj)
   }
 
   # resolve remotes from explicitly-requested packages

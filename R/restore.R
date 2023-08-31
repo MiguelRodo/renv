@@ -85,24 +85,17 @@ restore <- function(project  = NULL,
   # if users have requested the use of pak, delegate there
   if (config$pak.enabled() && !recursing()) {
     renv_pak_init()
-    return(
-      tryCatch(
-        renv_pak_restore(
+    k <- 0
+    restore_obj <- try(stop())
+    while (k <= 3 && inherits(restore_obj, "try-error")) {
+      restore_obj <- try(renv_pak_restore(
           packages = packages,
           lockfile = lockfile,
           project = project,
           exclude = exclude
-        ),
-        error = function(x) {
-         renv_pak_restore(
-          packages = packages,
-          lockfile = lockfile,
-          project = project,
-          exclude = exclude
-         )
-        }
-      )
-    )
+        ))
+      k <- k + 1
+    }
   }
 
   # set up Bioconductor version + repositories
