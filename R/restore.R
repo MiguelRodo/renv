@@ -85,17 +85,40 @@ restore <- function(project  = NULL,
   # if users have requested the use of pak, delegate there
   if (config$pak.enabled() && !recursing()) {
     renv_pak_init()
-    k <- 0
-    restore_obj <- try(stop())
-    while (k <= 3 && inherits(restore_obj, "try-error")) {
-      restore_obj <- try(renv_pak_restore(
+    
+    # initial attempt
+    result <- tryCatch(
+      renv_pak_restore(
           packages = packages,
           lockfile = lockfile,
           project = project,
           exclude = exclude
-        ))
+        ),
+      error = function(e) e
+    )
+    k <- 1
+    
+    # consider re-attempt if failed twice or less already
+    while (inherits(result, "error") && k < 3) {
+      # if not a pak subprocess error, stop
+      if (!grepl("^Subprocess is busy or cannot start$", conditionMessage(result)))
+        stop(conditionMessage(result))
+      result <- tryCatch(
+        renv_pak_restore(
+          packages = packages,
+          lockfile = lockfile,
+          project = project,
+          exclude = exclude
+        ),
+        error = function(e) e
+      )
       k <- k + 1
     }
+  
+    if (inherits(result, "error"))
+      stop(conditionMessage(result))
+    
+    return(result)
   }
 
   # set up Bioconductor version + repositories

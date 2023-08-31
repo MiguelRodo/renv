@@ -138,15 +138,30 @@ install <- function(packages = NULL,
   # if users have requested the use of pak, delegate there
   if (config$pak.enabled() && !recursing()) {
     renv_pak_init()
-    k <- 0
-    install_obj <- try(stop())
-    while (k <= 3 && inherits(install_obj, "try-error")) {
-      install_obj <- try(renv_pak_install(packages, libpaths, project))
+
+    # initial attempt
+    result <- tryCatch(
+      renv_pak_install(packages, libpaths, project),
+      error = function(e) e
+    )
+    k <- 1
+    
+    # consider re-attempt if failed twice or less already
+    while (inherits(result, "error") && k < 3) {
+      # if not a pak subprocess error, stop
+      if (!grepl("^Subprocess is busy or cannot start$", conditionMessage(result)))
+        stop(conditionMessage(result))
+      result <- tryCatch(
+        renv_pak_install(packages, libpaths, project),
+        error = function(e) e
+      )
       k <- k + 1
     }
-    if (inherits(install_obj, "try-error"))
-      stop("Error while installing using pak")
-    return(install_obj)
+  
+    if (inherits(result, "error"))
+      stop(conditionMessage(result))
+    
+    return(result)
   }
 
   # resolve remotes from explicitly-requested packages
