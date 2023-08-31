@@ -12,7 +12,7 @@
 #' @param version The version of renv to install. If `NULL`, the version
 #'   of renv currently installed will be used. The requested version of
 #'   renv will be retrieved from the renv public GitHub repository,
-#'   at <https://github.com/rstudio/renv>.
+#'   at <https://github.com/MiguelRodo/renv>.
 #'
 #' @param quiet Boolean; avoid printing output during install of renv?
 #'
@@ -53,7 +53,7 @@ renv_imbue_impl <- function(project,
 
   # otherwise, try to download and install the requested version
   # of renv from GitHub
-  remote <- paste("rstudio/renv", version %||% "main", sep = "@")
+  remote <- paste("MiguelRodo/renv", version %||% "main", sep = "@")
   record <- renv_remotes_resolve(remote)
   records <- list(renv = record)
 
