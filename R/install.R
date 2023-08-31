@@ -131,19 +131,27 @@ install <- function(packages = NULL,
   }
 
   # override repositories if requested
-  repos <- repos %||% config$repos.override()
+  repos <- repos %||% config$repos.override()project
   if (length(repos))
     renv_scope_options(repos = repos)
 
   # if users have requested the use of pak, delegate there
   if (config$pak.enabled() && !recursing()) {
     if (!requireNamespace("pak", quietly = TRUE)) {
-      # rather install pak in a separate process
+      # install pak in a separate process
       invisible(system2("Rscript", "-e renv:::renv_pak_init()"))
     }
-    
-    # now try install using pak
-    return(renv_pak_install(packages, libpaths, project))
+
+    # install using pak in a separate process
+    pak_install_args <- paste0(
+      "-e '",
+      "renv:::renv_pak_install(",
+      capture.output(dput(packages)), ", ",
+      capture.output(dput(libpaths)), ", ",
+      capture.output(dput(project)),
+      "')"
+    )
+    return(system2("Rscript", pak_install_args))
   }
 
   # resolve remotes from explicitly-requested packages
