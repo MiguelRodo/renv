@@ -92,18 +92,18 @@ restore <- function(project  = NULL,
 
     # install using pak in a separate process
     pak_restore_args <- paste0(
-        c(
-          "-e '",
-          substitute(
+      c(
+        "-e '",
+        substitute(
           renv:::renv_pak_restore(
-          packages = packages,
-          lockfile = lockfile,
-          project = project,
-          exclude = exclude)
+            packages = packages,
+            lockfile = lockfile,
+            project = project,
+            exclude = exclude)
           ),
-          "'"
-        ),
-        collapse = ""
+        "'"
+      ),
+      collapse = ""
     )
     return(system2("Rscript", pak_restore_args))
   }
